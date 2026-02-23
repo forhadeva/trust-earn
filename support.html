@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="bn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support - Earning Platform</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .soft-card {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15),
+                0 4px 10px -6px rgba(14, 165, 233, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+        }
+
+        .support-card {
+            transition: all 0.3s ease;
+        }
+
+        .support-card:active {
+            transform: scale(0.98);
+        }
+
+        /* WhatsApp Gradient */
+        .whatsapp-btn {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+        }
+
+        /* Telegram Gradient */
+        .telegram-btn {
+            background: linear-gradient(135deg, #0088cc 0%, #00a8ff 100%);
+        }
+    </style>
+</head>
+
+<body class="text-gray-700 select-none pb-20 md:pb-10">
+
+    <div class="bg-sky-500 shadow-md">
+        <div class="max-w-md md:max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
+            <a href="profile.html"
+                class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition">
+                <i class="ph-bold ph-caret-left text-xl"></i>
+            </a>
+            <h2 class="text-xl font-bold text-white tracking-wide">Support & Help</h2>
+        </div>
+    </div>
+
+    <main class="max-w-md md:max-w-xl mx-auto px-4 mt-8">
+
+        <div class="text-center mb-10">
+            <div class="w-20 h-20 bg-sky-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ph-fill ph-headset text-4xl text-sky-500"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800">எভাবে সাহায্য করতে পারি?</h1>
+            <p class="text-sm text-gray-500 mt-2">যেকোনো সমস্যার জন্য আমাদের সাথে যোগাযোগ করুন। আমরা দ্রুত আপনার সমস্যার
+                সমাধান করার চেষ্টা করব!</p>
+        </div>
+
+        <div class="space-y-4">
+            <!-- WhatsApp Option -->
+            <a href="https://wa.me/8801326699187" target="_blank"
+                class="support-card soft-card p-5 flex items-center justify-between cursor-pointer group hover:bg-green-50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-full whatsapp-btn flex items-center justify-center text-white shadow-lg">
+                        <i class="ph-fill ph-whatsapp-logo text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg group-hover:text-green-600 transition">WhatsApp
+                            Support</h3>
+                        <p class="text-xs text-gray-500">দ্রুত মেসেজ দিন</p>
+                    </div>
+                </div>
+                <div
+                    class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-green-100 group-hover:text-green-600 transition">
+                    <i class="ph-bold ph-caret-right"></i>
+                </div>
+            </a>
+
+            <!-- Telegram Option -->
+            <a href="https://t.me/@Forhad_vhai_01" target="_blank"
+                class="support-card soft-card p-5 flex items-center justify-between cursor-pointer group hover:bg-sky-50">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-12 h-12 rounded-full telegram-btn flex items-center justify-center text-white shadow-lg">
+                        <i class="ph-fill ph-telegram-logo text-2xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 text-lg group-hover:text-sky-600 transition">Telegram Support
+                        </h3>
+                        <p class="text-xs text-gray-500">অফিসিয়াল টেলিগ্রাম গ্রুপ</p>
+                    </div>
+                </div>
+                <div
+                    class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-sky-100 group-hover:text-sky-600 transition">
+                    <i class="ph-bold ph-caret-right"></i>
+                </div>
+            </a>
+        </div>
+
+        <div class="mt-10 bg-sky-50 border border-sky-100 p-4 rounded-xl flex gap-3 shadow-sm">
+            <i class="ph-fill ph-info text-sky-500 text-xl mt-0.5"></i>
+            <p class="text-xs text-sky-800 leading-relaxed font-medium">
+                সাপোর্ট টিম প্রতিদিন সকাল ৯টা থেকে রাত ১০টা পর্যন্ত আপনাদের সেবায় নিয়োজিত থাকে। আপনার অভিযোগ বা প্রশ্ন
+                বিস্তারিত লিখে মেসেজ দিন।
+            </p>
+        </div>
+
+    </main>
+
+</body>
+
+</html>
