@@ -146,10 +146,11 @@
             database.ref('deposits/').push(depositData)
                 .then(() => {
                     alert("রিকোয়েস্ট পাঠানো হয়েছে! অ্যাডমিন চেক করে আপনার অ্যাকাউন্ট অ্যাক্টিভ করবে।");
-                    window.location.href = 'deposit-history.html';
+                    window.location.href = 'deposit_history.html';
                 })
                 .catch(err => alert("সমস্যা হয়েছে: " + err.message));
         }
     </script>
 </body>
 </html>
+
