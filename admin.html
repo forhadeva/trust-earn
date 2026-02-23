@@ -102,9 +102,7 @@
             });
         }
 
-        // --- Real-time Data Loading ---
         function loadData() {
-            // Stats
             database.ref('users').on('value', snap => {
                 const users = snap.val() || {};
                 const list = Object.values(users);
@@ -112,7 +110,6 @@
                 document.getElementById('stat-active').innerText = list.filter(u => u.status === 'Active').length + " জন";
             });
 
-            // Deposits
             database.ref('deposits').on('value', snap => {
                 const depList = document.getElementById('deposit-list');
                 const deposits = snap.val() || {};
@@ -140,12 +137,15 @@
 
         function handleDep(key, uid, amt, status) {
             if(!confirm("Are you sure?")) return;
+            
+            // ১. ডিপোজিট স্ট্যাটাস আপডেট হবে
             database.ref('deposits/' + key).update({ status: status });
+            
+            // ২. Successful হলে শুধু ব্যালেন্স যোগ হবে (ID Active হবে না)
             if(status === 'Successful' && uid) {
-                database.ref('users/' + uid).update({ status: 'Active' });
                 database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
             }
-            alert("Done!");
+            alert("অপারেশন সফল হয়েছে!");
         }
 
         loadData();
