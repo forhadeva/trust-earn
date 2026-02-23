@@ -106,57 +106,43 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
-    <script>
-        // ১. Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyD7naXXNpZLZ4nWWSm1bFUKZQHwu5aLCRQ",
-            authDomain: "trustearn-a33fc.firebaseapp.com",
-            databaseURL: "https://trustearn-a33fc-default-rtdb.firebaseio.com",
-            projectId: "trustearn-a33fc",
-            storageBucket: "trustearn-a33fc.firebasestorage.app",
-            messagingSenderId: "771810262455",
-            appId: "1:771810262455:web:713d706a7c6da52ac77c32",
-            measurementId: "G-TV4HS5H2K3"
-        };
+   <script>
+    // ফায়ারবেস কনফিগারেশন আগের মতোই থাকবে
+    const userId = localStorage.getItem("earn_session_user");
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+    if (userId) {
+        // ১. আপনার রেফারাল কোড দেখানো (ইউজারের আইডিই রেফার কোড)
+        document.getElementById('refer-code').innerText = userId;
 
-        // Check Session & Load User Data
-        document.addEventListener("DOMContentLoaded", () => {
-            const userId = localStorage.getItem("earn_session_user");
-            
-            if (!userId) {
-                window.location.href = "auth.html"; // লগইন না থাকলে ফেরত পাঠাবে
+        // ২. ডাটাবেস থেকে শুধু আপনার রেফারালদের খুঁজে বের করা
+        database.ref('users').orderByChild('referredBy').equalTo(userId).on('value', (snapshot) => {
+            const listContainer = document.getElementById('refer-list');
+            listContainer.innerHTML = ''; // ডেমো ডাটা মুছে ফেলা
+
+            if (!snapshot.exists()) {
+                listContainer.innerHTML = '<p class="text-center text-gray-500 py-5">আপনার রেফারে এখনো কেউ জয়েন করেনি।</p>';
                 return;
             }
 
-            // ফায়ারবেস থেকে ইউজারের ফোন নাম্বার (রেফার কোড) টেনে আনা
-            database.ref('users/' + userId).on('value', (snapshot) => {
-                const user = snapshot.val();
-                if (user) {
-                    document.getElementById('referCode').value = user.phone;
-                    // যদি আপনি ইউজারের রেফারেল হিস্ট্রি ট্র্যাক করেন, তবে এখানে সংখ্যা বসাতে পারেন
-                } else {
-                    localStorage.removeItem("earn_session_user");
-                    window.location.href = "auth.html";
-                }
+            snapshot.forEach((childSnapshot) => {
+                const referredUser = childSnapshot.val();
+                listContainer.innerHTML += `
+                <div class="flex items-center justify-between p-3 border-b border-gray-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 font-bold uppercase">
+                            ${referredUser.name.charAt(0)}
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-gray-800">${referredUser.name}</h4>
+                            <p class="text-[10px] text-gray-400">Status: ${referredUser.status}</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-green-500">+ ৳ ২০</span>
+                </div>`;
             });
         });
-
-        function copyCode() {
-            var copyText = document.getElementById("referCode");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-
-            var btnText = document.getElementById("copyText");
-            btnText.innerText = "Copied!";
-            setTimeout(function () {
-                btnText.innerText = "Copy";
-            }, 2000);
-        }
-    </script>
+    }
+</script>
 </body>
 </html>
+
