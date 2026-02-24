@@ -102,7 +102,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
     <script>
-        // ১. Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD7naXXNpZLZ4nWWSm1bFUKZQHwu5aLCRQ",
             authDomain: "trustearn-a33fc.firebaseapp.com",
@@ -114,11 +113,9 @@
             measurementId: "G-TV4HS5H2K3"
         };
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // UI Switcher
         function switchForm(type) {
             const loginSec = document.getElementById('login-section');
             const signupSec = document.getElementById('signup-section');
@@ -165,36 +162,30 @@
             } else { alert("ভুল তথ্য দিয়েছেন! ❌"); }
         });
 
-        // Signup & Referral Logic
+        // Updated Signup Logic with Referral Support
         document.getElementById("signupForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const fd = new FormData(e.target);
             const phone = fd.get("phone").trim();
-            const referCode = fd.get("referral").trim();
-            const userId = Math.random().toString(36).substr(2, 9);
+            const referCode = fd.get("referral").trim(); // ইউজারের দেওয়া রেফার কোড
+            const userId = Math.random().toString(36).substr(2, 9); // এই আইডিই তার রেফার কোড
 
-            if (referCode) {
-                const snapshot = await database.ref('users').once('value');
-                const users = snapshot.val();
-                if (users) {
-                    for (let id in users) {
-                        if (users[id].phone === referCode) {
-                            const bonus = (users[id].balance || 0) + 50;
-                            database.ref('users/' + id).update({ balance: bonus });
-                            break;
-                        }
-                    }
-                }
-            }
-
+            // নতুন ইউজারের তথ্য ডাটাবেসে সেভ করা
             database.ref('users/' + userId).set({
-                id: userId, name: fd.get("name").trim(),
-                email: fd.get("email").trim(), phone: phone,
-                pass: fd.get("pass").trim(), balance: 0, status: 'Inactive'
+                id: userId,
+                name: fd.get("name").trim(),
+                email: fd.get("email").trim(),
+                phone: phone,
+                pass: fd.get("pass").trim(),
+                balance: 0,
+                status: 'Inactive',
+                referredBy: referCode || "none", // রেফার কোড থাকলে সেটি ডাটাবেসে লিঙ্ক হবে
+                joinedAt: new Date().toLocaleString()
             }).then(() => {
                 localStorage.setItem("earn_session_user", userId);
+                alert("একাউন্ট তৈরি সফল হয়েছে! 🎉");
                 window.location.href = "index.html";
-            });
+            }).catch(err => alert("Error: " + err.message));
         });
     </script>
 </body>
