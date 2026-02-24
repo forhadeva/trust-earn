@@ -135,20 +135,22 @@
             });
         }
 
-function handleDep(key, uid, amt, status) {
-    if(!confirm("আপনি কি নিশ্চিত?")) return;
-    
-    // শুধু ডিপোজিট স্ট্যাটাস আপডেট করা
-    database.ref('deposits/' + key).update({ status: status });
-    
-    if(status === 'Successful' && uid) {
-        // ইউজারের ব্যালেন্সে টাকা যোগ করা (এখানে স্ট্যাটাস Active করা হচ্ছে না)
-        database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
-    }
-    alert("ডিপোজিট সফলভাবে অ্যাপ্রুভ হয়েছে!");
-}
+        // --- মূল ফিক্স: এখানে শুধু ব্যালেন্স আপডেট হবে, আইডি স্ট্যাটাস হাত দেওয়া হবে না ---
+        function handleDep(key, uid, amt, status) {
+            if(!confirm("আপনি কি নিশ্চিত?")) return;
+            
+            // শুধু ডিপোজিট ডাটাবেসের স্ট্যাটাস Successful করা
+            database.ref('deposits/' + key).update({ status: status });
+            
+            if(status === 'Successful' && uid) {
+                // শুধু ইউজারের ব্যালেন্সে টাকা যোগ করা হচ্ছে
+                // এখানে status: 'Active' লাইনটি সরিয়ে দেওয়া হয়েছে যাতে আইডি অটো একটিভ না হয়
+                database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
+            }
+            alert("ডিপোজিট সফলভাবে অ্যাপ্রুভ হয়েছে!");
+        }
+
         loadData();
     </script>
 </body>
 </html>
-
