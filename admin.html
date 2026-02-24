@@ -14,68 +14,89 @@
         .tab-btn.active { background-color: #0ea5e9; color: white; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
         .tab-btn { background-color: transparent; color: #64748b; transition: all 0.3s; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
+        /* ব্লার ইফেক্ট অ্যাডমিন প্যানেল হাইড করার জন্য */
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
     </style>
 </head>
 
 <body class="text-gray-700 pb-20 md:pb-10">
-    <div class="bg-slate-800 shadow-md sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center text-white shadow-lg">
-                    <i class="ph-bold ph-shield-check text-xl"></i>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-white tracking-wide leading-tight">Admin Panel</h2>
-                    <p class="text-[10px] text-sky-400">মাস্টার কন্ট্রোল রুম</p>
-                </div>
+
+    <div id="admin-login-overlay" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center px-4 backdrop-blur-md transition-all duration-300">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center transform transition-all">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+                <i class="ph-fill ph-lock-key"></i>
             </div>
-            <button onclick="logout()" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-red-500/30">Logout</button>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">Admin Security</h2>
+            <p class="text-xs text-gray-500 mb-6 font-medium tracking-wide">মাস্টার পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
+            
+            <input type="password" id="admin-password" placeholder="Password..." class="w-full px-4 py-3 border-2 border-gray-100 rounded-xl mb-4 focus:outline-none focus:border-sky-500 bg-gray-50 text-center text-lg tracking-widest font-bold">
+            
+            <button onclick="checkAdminPassword()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-slate-900 transition active:scale-95">
+                Unlock Panel
+            </button>
         </div>
     </div>
 
-    <main class="max-w-4xl mx-auto px-4 mt-6">
-        <div class="flex bg-white rounded-2xl p-1 mb-6 shadow-sm border border-gray-100 overflow-x-auto hide-scrollbar">
-            <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
-                <i class="ph-fill ph-squares-four text-lg"></i> Overview
-            </button>
-            <button onclick="switchTab('deposits')" id="tab-deposits" class="tab-btn flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
-                <i class="ph-fill ph-download-simple text-lg"></i> Deposits
-            </button>
-            <button onclick="switchTab('withdraws')" id="tab-withdraws" class="tab-btn flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
-                <i class="ph-fill ph-upload-simple text-lg"></i> Withdraws
-            </button>
-        </div>
-
-        <div id="section-overview" class="block space-y-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-white soft-card p-4 border-l-4 border-sky-500 text-center">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">ইউজার</p>
-                    <h3 id="stat-users" class="text-xl font-bold">...</h3>
+    <div id="main-admin-content" class="blur-content h-screen overflow-hidden">
+        <div class="bg-slate-800 shadow-md sticky top-0 z-50">
+            <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center text-white shadow-lg">
+                        <i class="ph-bold ph-shield-check text-xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-white tracking-wide leading-tight">Admin Panel</h2>
+                        <p class="text-[10px] text-sky-400">মাস্টার কন্ট্রোল রুম</p>
+                    </div>
                 </div>
-                <div class="bg-white soft-card p-4 border-l-4 border-green-500 text-center">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">অ্যাক্টিভ</p>
-                    <h3 id="stat-active" class="text-xl font-bold">...</h3>
-                </div>
-                <div class="bg-white soft-card p-4 border-l-4 border-purple-500 text-center">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">পেন্ডিং ডিপোজিট</p>
-                    <h3 id="stat-dep" class="text-xl font-bold">...</h3>
-                </div>
-                <div class="bg-white soft-card p-4 border-l-4 border-orange-500 text-center">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase">পেন্ডিং উইথড্র</p>
-                    <h3 id="stat-wid" class="text-xl font-bold">...</h3>
-                </div>
+                <button onclick="logout()" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-red-500/30 hover:bg-red-500 hover:text-white transition">Lock Panel</button>
             </div>
         </div>
 
-        <div id="section-deposits" class="hidden space-y-4">
-            <h3 class="font-bold text-gray-800">Deposit Requests</h3>
-            <div id="deposit-list" class="space-y-3"></div>
-        </div>
-        <div id="section-withdraws" class="hidden space-y-4">
-            <h3 class="font-bold text-gray-800">Withdraw Requests</h3>
-            <div id="withdraw-list" class="space-y-3"></div>
-        </div>
-    </main>
+        <main class="max-w-4xl mx-auto px-4 mt-6">
+            <div class="flex bg-white rounded-2xl p-1 mb-6 shadow-sm border border-gray-100 overflow-x-auto hide-scrollbar">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
+                    <i class="ph-fill ph-squares-four text-lg"></i> Overview
+                </button>
+                <button onclick="switchTab('deposits')" id="tab-deposits" class="tab-btn flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
+                    <i class="ph-fill ph-download-simple text-lg"></i> Deposits
+                </button>
+                <button onclick="switchTab('withdraws')" id="tab-withdraws" class="tab-btn flex-1 min-w-[100px] py-2.5 text-xs font-bold rounded-xl flex flex-col items-center gap-1">
+                    <i class="ph-fill ph-upload-simple text-lg"></i> Withdraws
+                </button>
+            </div>
+
+            <div id="section-overview" class="block space-y-4">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white soft-card p-4 border-l-4 border-sky-500 text-center">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">ইউজার</p>
+                        <h3 id="stat-users" class="text-xl font-bold">...</h3>
+                    </div>
+                    <div class="bg-white soft-card p-4 border-l-4 border-green-500 text-center">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">অ্যাক্টিভ</p>
+                        <h3 id="stat-active" class="text-xl font-bold">...</h3>
+                    </div>
+                    <div class="bg-white soft-card p-4 border-l-4 border-purple-500 text-center">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">পেন্ডিং ডিপোজিট</p>
+                        <h3 id="stat-dep" class="text-xl font-bold">...</h3>
+                    </div>
+                    <div class="bg-white soft-card p-4 border-l-4 border-orange-500 text-center">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">পেন্ডিং উইথড্র</p>
+                        <h3 id="stat-wid" class="text-xl font-bold">...</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div id="section-deposits" class="hidden space-y-4">
+                <h3 class="font-bold text-gray-800">Deposit Requests</h3>
+                <div id="deposit-list" class="space-y-3"></div>
+            </div>
+            <div id="section-withdraws" class="hidden space-y-4">
+                <h3 class="font-bold text-gray-800">Withdraw Requests</h3>
+                <div id="withdraw-list" class="space-y-3"></div>
+            </div>
+        </main>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
@@ -93,7 +114,38 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        function logout() { localStorage.removeItem("earn_session_user"); window.location.href = "auth.html"; }
+        // --- 🔐 অ্যাডমিন সিকিউরিটি লজিক ---
+        const MASTER_PASSWORD = "admin123"; // 👈 এখানে আপনার কাঙ্ক্ষিত পাসওয়ার্ড বসান
+
+        // পেজ লোড হলে চেক করবে আগে থেকে লগইন করা আছে কি না
+        window.onload = function() {
+            if(localStorage.getItem("admin_unlocked") === "true") {
+                unlockPanel();
+            }
+        };
+
+        function checkAdminPassword() {
+            const pass = document.getElementById('admin-password').value;
+            if(pass === MASTER_PASSWORD) {
+                localStorage.setItem("admin_unlocked", "true");
+                unlockPanel();
+            } else {
+                alert("❌ ভুল পাসওয়ার্ড! দয়া করে সঠিক পাসওয়ার্ড দিন।");
+                document.getElementById('admin-password').value = "";
+            }
+        }
+
+        function unlockPanel() {
+            document.getElementById('admin-login-overlay').style.display = 'none';
+            document.getElementById('main-admin-content').classList.remove('blur-content', 'h-screen', 'overflow-hidden');
+        }
+
+        function logout() { 
+            // লগআউট করলে আবার লক হয়ে যাবে
+            localStorage.removeItem("admin_unlocked"); 
+            window.location.reload(); 
+        }
+        // ------------------------------------
 
         function switchTab(tabName) {
             ['overview', 'deposits', 'withdraws'].forEach(t => {
@@ -135,16 +187,12 @@
             });
         }
 
-        // --- মূল ফিক্স: এখানে শুধু ব্যালেন্স আপডেট হবে, আইডি স্ট্যাটাস হাত দেওয়া হবে না ---
         function handleDep(key, uid, amt, status) {
             if(!confirm("আপনি কি নিশ্চিত?")) return;
             
-            // শুধু ডিপোজিট ডাটাবেসের স্ট্যাটাস Successful করা
             database.ref('deposits/' + key).update({ status: status });
             
             if(status === 'Successful' && uid) {
-                // শুধু ইউজারের ব্যালেন্সে টাকা যোগ করা হচ্ছে
-                // এখানে status: 'Active' লাইনটি সরিয়ে দেওয়া হয়েছে যাতে আইডি অটো একটিভ না হয়
                 database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
             }
             alert("ডিপোজিট সফলভাবে অ্যাপ্রুভ হয়েছে!");
