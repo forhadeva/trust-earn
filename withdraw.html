@@ -4,76 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Withdraw - Earning Platform</title>
+    <title>Withdraw - Trust Earn</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f8fafc;
-            /* bg-slate-50 */
-        }
-
-        /* Soft UI Card */
-        .soft-card {
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15),
-                0 4px 10px -6px rgba(14, 165, 233, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 20px;
-        }
-
-        /* Balance Card Gradient (Sky Blue Theme) */
-        .balance-card {
-            background: linear-gradient(120deg, #0ea5e9 0%, #0284c7 100%);
-            color: white;
-            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3);
-        }
-
-        /* Method Selector Style */
-        .method-card {
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            opacity: 0.6;
-            filter: grayscale(100%);
-            background: white;
-        }
-
-        .method-card.selected {
-            border-color: #0ea5e9;
-            /* Sky Blue */
-            background: #f0f9ff;
-            opacity: 1;
-            filter: grayscale(0%);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.15);
-        }
-
-        /* Input Fields */
-        .soft-input {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            transition: all 0.2s;
-        }
-
-        .soft-input:focus {
-            border-color: #0ea5e9;
-            background: #fff;
-            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1);
-        }
-
-        /* Button Gradient */
-        .btn-gradient {
-            background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
-        }
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        .soft-card { background: rgba(255, 255, 255, 0.9); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px; }
+        .balance-card { background: linear-gradient(120deg, #0ea5e9 0%, #0284c7 100%); color: white; box-shadow: 0 10px 25px rgba(14, 165, 233, 0.3); }
+        .method-card { border: 2px solid transparent; transition: all 0.3s ease; cursor: pointer; opacity: 0.6; filter: grayscale(100%); background: white; }
+        .method-card.selected { border-color: #0ea5e9; background: #f0f9ff; opacity: 1; filter: grayscale(0%); transform: translateY(-2px); shadow: 0 10px 20px rgba(14, 165, 233, 0.15); }
+        .soft-input { background: #F8FAFC; border: 1px solid #E2E8F0; transition: all 0.2s; }
+        .soft-input:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.1); }
+        .btn-gradient { background: linear-gradient(90deg, #0ea5e9 0%, #0284c7 100%); color: white; }
     </style>
 </head>
 
@@ -81,8 +26,7 @@
 
     <div class="bg-sky-500 shadow-md">
         <div class="max-w-md md:max-w-4xl mx-auto px-4 py-4 flex items-center gap-4">
-            <a href="profile.html"
-                class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white hover:bg-white/30 transition">
+            <a href="profile.html" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white">
                 <i class="ph-bold ph-caret-left text-xl"></i>
             </a>
             <h2 class="text-xl font-bold text-white tracking-wide">Withdraw Money</h2>
@@ -90,205 +34,159 @@
     </div>
 
     <main class="max-w-md md:max-w-xl mx-auto px-4 mt-6">
-
         <div class="balance-card rounded-2xl p-6 flex justify-between items-center relative overflow-hidden mb-6">
             <div class="z-10">
-                <p class="text-xs text-sky-100 uppercase font-medium tracking-wider">বর্তমান ব্যালেন্স</p>
-                <h2 class="text-3xl font-bold mt-1 tracking-wider" id="current-balance">Loading...</h2>
+                <p class="text-xs text-sky-100 uppercase font-medium">বর্তমান ব্যালেন্স</p>
+                <h2 class="text-3xl font-bold mt-1" id="current-balance">৳ ০.০০</h2>
             </div>
-            <div
-                class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm z-10 shadow-inner">
+            <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm z-10 shadow-inner">
                 <i class="ph-fill ph-wallet text-2xl"></i>
             </div>
-            <div class="absolute -right-4 -bottom-8 w-32 h-32 bg-white/10 rounded-full"></div>
-            <div class="absolute right-12 -top-10 w-20 h-20 bg-white/10 rounded-full"></div>
         </div>
 
         <div>
             <p class="text-sm font-semibold text-gray-600 mb-3 block">টাকা নেওয়ার মাধ্যম</p>
             <div class="grid grid-cols-3 gap-3">
-                <div class="method-card soft-card p-3 flex flex-col items-center gap-2 selected"
-                    onclick="selectMethod(this, 'bKash')">
-                    <img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" alt="bKash"
-                        class="h-10 object-contain">
+                <div class="method-card soft-card p-3 flex flex-col items-center gap-2 selected" onclick="selectMethod(this, 'bKash')">
+                    <img src="https://freelogopng.com/images/all_img/1656227518bkash-logo-png.png" alt="bKash" class="h-10 object-contain">
                     <span class="text-xs font-bold text-gray-600">bKash</span>
                 </div>
-                <div class="method-card soft-card p-3 flex flex-col items-center gap-2"
-                    onclick="selectMethod(this, 'Nagad')">
-                    <img src="https://freelogopng.com/images/all_img/1679248787nagad-logo.png" alt="Nagad"
-                        class="h-10 object-contain">
+                <div class="method-card soft-card p-3 flex flex-col items-center gap-2" onclick="selectMethod(this, 'Nagad')">
+                    <img src="https://freelogopng.com/images/all_img/1679248787nagad-logo.png" alt="Nagad" class="h-10 object-contain">
                     <span class="text-xs font-bold text-gray-600">Nagad</span>
                 </div>
-                <div class="method-card soft-card p-3 flex flex-col items-center gap-2"
-                    onclick="selectMethod(this, 'Rocket')">
-                    <img src="https://seeklogo.com/images/D/dutch-bangla-rocket-logo-B4D1CC458D-seeklogo.com.png"
-                        alt="Rocket" class="h-10 object-contain">
+                <div class="method-card soft-card p-3 flex flex-col items-center gap-2" onclick="selectMethod(this, 'Rocket')">
+                    <img src="https://seeklogo.com/images/D/dutch-bangla-rocket-logo-B4D1CC458D-seeklogo.com.png" alt="Rocket" class="h-10 object-contain">
                     <span class="text-xs font-bold text-gray-600">Rocket</span>
                 </div>
             </div>
         </div>
 
         <form class="space-y-4 mt-6 soft-card p-5">
-
             <div>
-                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">টাকার পরিমাণ (Amount)</label>
+                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">টাকার পরিমাণ (Min: ৳৫০০)</label>
                 <div class="relative">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-lg">৳</span>
-                    <input type="number" id="withdraw-amount" placeholder="সর্বনিম্ন: ৫০০" required
-                        class="soft-input w-full rounded-xl py-3 pl-10 pr-4 outline-none text-gray-800 font-bold placeholder-gray-400">
-                </div>
-                <p class="text-[11px] text-red-500 font-medium mt-1.5 ml-1 hidden" id="error-msg">
-                    <i class="ph-fill ph-warning-circle inline-block align-middle pb-0.5"></i> আপনার পর্যাপ্ত ব্যালেন্স
-                    নেই!
-                </p>
-            </div>
-
-            <div>
-                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">রিসিভিং নাম্বার (Receiving
-                    Number)</label>
-                <input type="tel" id="receive-number" placeholder="017xxxxxxxx" required
-                    class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700 placeholder-gray-400">
-            </div>
-
-            <div>
-                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">অ্যাকাউন্টের ধরন (Account
-                    Type)</label>
-                <div class="relative">
-                    <select id="account-type"
-                        class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700 appearance-none bg-white font-medium cursor-pointer">
-                        <option value="Personal">Personal (পার্সোনাল)</option>
-                        <option value="Agent">Agent (এজেন্ট)</option>
-                    </select>
-                    <i
-                        class="ph-bold ph-caret-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    <input type="number" id="withdraw-amount" placeholder="৫০০ বা তার বেশি" required class="soft-input w-full rounded-xl py-3 pl-10 pr-4 outline-none text-gray-800 font-bold">
                 </div>
             </div>
 
             <div>
-                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">পাসওয়ার্ড (Account Password)</label>
-                <input type="password" id="account-password" placeholder="অ্যাকাউন্টের পাসওয়ার্ড দিন" required
-                    class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700 placeholder-gray-400">
+                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">রিসিভিং নাম্বার</label>
+                <input type="tel" id="receive-number" placeholder="017xxxxxxxx" required class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700">
             </div>
 
-            <div class="bg-yellow-50 border border-yellow-200 p-3 rounded-xl flex gap-2.5 items-start shadow-sm">
-                <i class="ph-fill ph-warning-circle text-yellow-500 text-lg mt-0.5 shrink-0"></i>
-                <p class="text-[11px] text-yellow-800 leading-relaxed font-medium">
-                    উইথড্র রিকোয়েস্ট সাধারণত ২৪ ঘণ্টার মধ্যে প্রসেস করা হয়।
-                    সর্বনিম্ন উইথড্রয়ের পরিমাণ <span class="font-bold text-yellow-900">৳৫০০</span>।
-                </p>
+            <div>
+                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">অ্যাকাউন্টের ধরন</label>
+                <select id="account-type" class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700 font-medium">
+                    <option value="Personal">Personal (পার্সোনাল)</option>
+                    <option value="Agent">Agent (এজেন্ট)</option>
+                </select>
             </div>
 
-            <button type="button" onclick="submitWithdraw()"
-                class="w-full py-3.5 rounded-xl btn-gradient font-bold text-white shadow-lg mt-2 active:scale-95 transition-transform flex items-center justify-center gap-2 hover:shadow-xl">
+            <div>
+                <label class="text-xs font-semibold text-gray-600 ml-1 mb-1 block">অ্যাকাউন্ট পাসওয়ার্ড</label>
+                <input type="password" id="account-password" placeholder="পাসওয়ার্ড দিন" required class="soft-input w-full rounded-xl py-3 px-4 outline-none text-gray-700">
+            </div>
+
+            <button type="button" onclick="submitWithdraw()" class="w-full py-3.5 rounded-xl btn-gradient font-bold text-white shadow-lg mt-2 flex items-center justify-center gap-2">
                 কনফার্ম উইথড্র <i class="ph-bold ph-paper-plane-right text-lg"></i>
             </button>
         </form>
-
     </main>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7naXXNpZLZ4nWWSm1bFUKZQHwu5aLCRQ",
+            authDomain: "trustearn-a33fc.firebaseapp.com",
+            databaseURL: "https://trustearn-a33fc-default-rtdb.firebaseio.com",
+            projectId: "trustearn-a33fc",
+            storageBucket: "trustearn-a33fc.firebasestorage.app",
+            messagingSenderId: "771810262455",
+            appId: "1:771810262455:web:713d706a7c6da52ac77c32"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         let selectedMethod = 'bKash';
         let currentBalance = 0;
+        let userPass = "";
 
+        // ১. রিয়েল-টাইম ডাটা লোড করা
         document.addEventListener("DOMContentLoaded", () => {
             const sessionId = localStorage.getItem("earn_session_user");
             if (!sessionId) {
-                window.location.href = "login.html";
+                window.location.href = "auth.html"; // সঠিক লিঙ্ক
                 return;
             }
 
-            const users = JSON.parse(localStorage.getItem("earn_users_v1") || "[]");
-            const user = users.find(u => u.id === sessionId);
-
-            if (user) {
-                currentBalance = user.balance || 0;
-                document.getElementById('current-balance').innerText = `৳ ${(currentBalance).toFixed(2)}`;
-            } else {
-                window.location.href = "login.html";
-            }
+            database.ref('users/' + sessionId).on('value', (snapshot) => {
+                const user = snapshot.val();
+                if (user) {
+                    currentBalance = user.balance || 0;
+                    userPass = user.pass;
+                    document.getElementById('current-balance').innerText = `৳ ${currentBalance.toFixed(2)}`;
+                } else {
+                    window.location.href = "auth.html";
+                }
+            });
         });
 
         function selectMethod(element, name) {
-            // Remove active style from all cards
-            document.querySelectorAll('.method-card').forEach(el => {
-                el.classList.remove('selected');
-            });
-
-            // Add active style to clicked card
+            document.querySelectorAll('.method-card').forEach(el => el.classList.remove('selected'));
             element.classList.add('selected');
             selectedMethod = name;
         }
 
+        // ২. উইথড্র ফাংশন (Firebase এর সাথে)
         function submitWithdraw() {
             const sessionId = localStorage.getItem("earn_session_user");
-            if (!sessionId) return window.location.href = "login.html";
-
-            const users = JSON.parse(localStorage.getItem("earn_users_v1") || "[]");
-            const user = users.find(u => u.id === sessionId);
-            if (!user) return window.location.href = "login.html";
-
-            const amountInput = document.getElementById('withdraw-amount').value;
-            const amount = parseFloat(amountInput);
+            const amount = parseFloat(document.getElementById('withdraw-amount').value);
             const receiveNumber = document.getElementById('receive-number').value.trim();
             const accountType = document.getElementById('account-type').value;
             const password = document.getElementById('account-password').value;
-            const errorMsg = document.getElementById('error-msg');
 
-            // Reset Error
-            errorMsg.classList.add('hidden');
-
-            if (!amountInput || isNaN(amount) || amount < 500) {
+            if (!amount || amount < 500) {
                 alert("উইথড্র করার জন্য সর্বনিম্ন পরিমাণ ৫০০ টাকা হতে হবে।");
                 return;
             }
 
-            if (!receiveNumber || !password) {
-                alert("অনুগ্রহ করে নাম্বার ও পাসওয়ার্ড প্রদান করুন।");
+            if (amount > currentBalance) {
+                alert("আপনার পর্যাপ্ত ব্যালেন্স নেই!");
                 return;
             }
 
-            if (password !== user.pass) {
+            if (password !== userPass) {
                 alert("আপনার একাউন্টের পাসওয়ার্ড সঠিক নয়!");
                 return;
             }
 
-            if (amount > currentBalance) {
-                // Show Error and highlight input
-                errorMsg.classList.remove('hidden');
-                document.getElementById('withdraw-amount').classList.add('border-red-400', 'bg-red-50');
-
-                // Remove error styling after 3 seconds
-                setTimeout(() => {
-                    document.getElementById('withdraw-amount').classList.remove('border-red-400', 'bg-red-50');
-                }, 3000);
-
+            if (!receiveNumber) {
+                alert("রিসিভিং নাম্বার দিন।");
                 return;
             }
 
-            const withdraws = JSON.parse(localStorage.getItem('earn_withdraws_v1') || '[]');
-            const newWithdraw = {
-                id: Math.random().toString(36).substr(2, 9),
+            const withdrawData = {
                 userId: sessionId,
                 method: selectedMethod,
                 amount: amount,
                 number: receiveNumber,
                 type: accountType,
-                date: new Date().toISOString(),
-                status: 'Pending'
+                status: 'Pending',
+                timestamp: Date.now(),
+                dateText: new Date().toLocaleString()
             };
 
-            withdraws.push(newWithdraw);
-            localStorage.setItem('earn_withdraws_v1', JSON.stringify(withdraws));
-
-            // Deduct locally for immediate UI response (Note: pending deduction should subtract balance temporarily)
-            user.balance -= amount;
-            localStorage.setItem("earn_users_v1", JSON.stringify(users));
-
-            // Success 
-            alert(`আপনার ৳${amount} উইথড্র রিকোয়েস্ট (${selectedMethod}) সফলভাবে গ্রহণ করা হয়েছে!`);
-            window.location.href = 'withdraw_history.html'; // Redirect to history
+            // ৩. ডাটাবেসে সেভ এবং ব্যালেন্স মাইনাস
+            database.ref('withdraws/').push(withdrawData).then(() => {
+                database.ref('users/' + sessionId + '/balance').transaction((b) => (b || 0) - amount);
+                alert(`আপনার ৳${amount} উইথড্র রিকোয়েস্ট সফলভাবে গ্রহণ করা হয়েছে!`);
+                window.location.href = 'withdraw_history.html'; // সঠিক ফাইল নাম
+            });
         }
     </script>
 </body>
-
 </html>
