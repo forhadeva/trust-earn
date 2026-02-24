@@ -129,34 +129,33 @@
         }
 
         // ৩. একাউন্ট অ্যাক্টিভেশন এবং রেফার কমিশন লজিক
-        function handleActivation() {
-            if (!currentUserData) return;
+          function handleActivation() {
+    if (!currentUserData) return;
+    
+    // চেক করা হচ্ছে ব্যালেন্স ১০০ টাকা আছে কি না
+    if (currentUserData.balance >= 100) {
+        if (confirm("আপনি কি ১০০ টাকা দিয়ে অ্যাকাউন্ট অ্যাক্টিভ করতে চান?")) {
+            const newBalance = currentUserData.balance - 100;
+            const refBy = currentUserData.referredBy; // রেফারার খুঁজে বের করা
             
-            if (currentUserData.balance >= 100) {
-                if (confirm("আপনি কি ১০০ টাকা দিয়ে অ্যাকাউন্ট অ্যাক্টিভ করতে চান?")) {
-                    const newBalance = currentUserData.balance - 100;
-                    
-                    // ইউজারের আইডি একটিভ করা এবং ব্যালেন্স কাটা
-                    database.ref('users/' + userId).update({
-                        balance: newBalance,
-                        status: 'Active'
-                    }).then(() => {
-                        // রেফার বোনাস পাঠানোর লজিক
-                        if (currentUserData.referredBy && currentUserData.referredBy !== "none") {
-                            const referParentId = currentUserData.referredBy;
-                            
-                            database.ref('users/' + referParentId + '/balance').transaction((currentBal) => {
-                                return (currentBal || 0) + 50; // রেফারারকে ৫০ টাকা কমিশন দেওয়া
-                            });
-                        }
-                        alert("সফলভাবে অ্যাক্টিভ হয়েছে এবং রেফারার কমিশন পেয়েছেন! ✅");
-                    });
+            // ১. ইউজারের নিজের ব্যালেন্স কাটা এবং স্ট্যাটাস Active করা
+            database.ref('users/' + userId).update({
+                balance: newBalance,
+                status: 'Active'
+            }).then(() => {
+                // ২. রেফারারকে ৫০ টাকা কমিশন পাঠানো (যদি থাকে)
+                if (refBy && refBy !== "none") {
+                    database.ref('users/' + refBy + '/balance').transaction(rb => (rb || 0) + 50);
                 }
-            } else {
-                alert("পর্যাপ্ত ব্যালেন্স নেই! দয়া করে ডিপোজিট করুন।");
+                alert("আপনার অ্যাকাউন্ট সফলভাবে অ্যাক্টিভ হয়েছে! ✅");
+            });
+        }
+    } else {
+        alert("আপনার ব্যালেন্স পর্যাপ্ত নয় (৳১০০ প্রয়োজন)। দয়া করে আগে ডিপোজিট করুন।");
                 window.location.href = "deposit.html";
             }
         }
     </script>
 </body>
 </html>
+
