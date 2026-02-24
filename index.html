@@ -81,17 +81,6 @@
         </a>
     </div>
 
-    <div id="custom-popup" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-2xl w-full max-w-sm p-6 text-center shadow-2xl">
-            <h3 id="popup-title" class="text-xl font-bold text-gray-800 mb-2">Notice</h3>
-            <p id="popup-message" class="text-gray-500 text-sm mb-6">Message</p>
-            <div class="flex gap-3">
-                <button onclick="closePopup()" id="btn-popup-cancel" class="flex-1 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hidden">Cancel</button>
-                <button id="btn-popup-confirm" class="flex-1 py-3 bg-sky-500 text-white font-bold rounded-xl">OK</button>
-            </div>
-        </div>
-    </div>
-
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 
@@ -114,6 +103,7 @@
         if (!userId) {
             window.location.href = "auth.html";
         } else {
+            // ১. ইউজারের ডাটা লোড করা
             database.ref('users/' + userId).on('value', (snapshot) => {
                 const user = snapshot.val();
                 if (user) {
@@ -130,18 +120,36 @@
                     window.location.href = "auth.html";
                 }
             });
+
+            // ২. মোট রেফারাল সংখ্যা লোড করা
+            database.ref('users').orderByChild('referredBy').equalTo(userId).on('value', (snap) => {
+                const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+                document.getElementById('home-refers').innerText = count + " জন";
+            });
         }
 
+        // ৩. একাউন্ট অ্যাক্টিভেশন এবং রেফার কমিশন লজিক
         function handleActivation() {
             if (!currentUserData) return;
+            
             if (currentUserData.balance >= 100) {
                 if (confirm("আপনি কি ১০০ টাকা দিয়ে অ্যাকাউন্ট অ্যাক্টিভ করতে চান?")) {
                     const newBalance = currentUserData.balance - 100;
+                    
+                    // ইউজারের আইডি একটিভ করা এবং ব্যালেন্স কাটা
                     database.ref('users/' + userId).update({
                         balance: newBalance,
                         status: 'Active'
                     }).then(() => {
-                        alert("সফলভাবে অ্যাক্টিভ হয়েছে! ✅");
+                        // রেফার বোনাস পাঠানোর লজিক
+                        if (currentUserData.referredBy && currentUserData.referredBy !== "none") {
+                            const referParentId = currentUserData.referredBy;
+                            
+                            database.ref('users/' + referParentId + '/balance').transaction((currentBal) => {
+                                return (currentBal || 0) + 50; // রেফারারকে ৫০ টাকা কমিশন দেওয়া
+                            });
+                        }
+                        alert("সফলভাবে অ্যাক্টিভ হয়েছে এবং রেফারার কমিশন পেয়েছেন! ✅");
                     });
                 }
             } else {
@@ -149,8 +157,6 @@
                 window.location.href = "deposit.html";
             }
         }
-
-        function closePopup() { document.getElementById('custom-popup').classList.add('hidden'); }
     </script>
 </body>
 </html>
