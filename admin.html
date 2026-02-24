@@ -1,6 +1,7 @@
+Admin 
+
 <!DOCTYPE html>
 <html lang="bn">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,11 +15,9 @@
         .tab-btn.active { background-color: #0ea5e9; color: white; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.3); }
         .tab-btn { background-color: transparent; color: #64748b; transition: all 0.3s; }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
-        /* ব্লার ইফেক্ট অ্যাডমিন প্যানেল হাইড করার জন্য */
         .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
     </style>
 </head>
-
 <body class="text-gray-700 pb-20 md:pb-10">
 
     <div id="admin-login-overlay" class="fixed inset-0 bg-slate-900/95 z-[100] flex items-center justify-center px-4 backdrop-blur-md transition-all duration-300">
@@ -28,9 +27,7 @@
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-1">Admin Security</h2>
             <p class="text-xs text-gray-500 mb-6 font-medium tracking-wide">মাস্টার পাসওয়ার্ড দিয়ে প্রবেশ করুন</p>
-            
             <input type="password" id="admin-password" placeholder="Password..." class="w-full px-4 py-3 border-2 border-gray-100 rounded-xl mb-4 focus:outline-none focus:border-sky-500 bg-gray-50 text-center text-lg tracking-widest font-bold">
-            
             <button onclick="checkAdminPassword()" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg hover:bg-slate-900 transition active:scale-95">
                 Unlock Panel
             </button>
@@ -91,6 +88,7 @@
                 <h3 class="font-bold text-gray-800">Deposit Requests</h3>
                 <div id="deposit-list" class="space-y-3"></div>
             </div>
+            
             <div id="section-withdraws" class="hidden space-y-4">
                 <h3 class="font-bold text-gray-800">Withdraw Requests</h3>
                 <div id="withdraw-list" class="space-y-3"></div>
@@ -114,10 +112,8 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // --- 🔐 অ্যাডমিন সিকিউরিটি লজিক ---
-        const MASTER_PASSWORD = "Forhad1122"; // 👈 এখানে আপনার কাঙ্ক্ষিত পাসওয়ার্ড বসান
+        const MASTER_PASSWORD = "admin123";
 
-        // পেজ লোড হলে চেক করবে আগে থেকে লগইন করা আছে কি না
         window.onload = function() {
             if(localStorage.getItem("admin_unlocked") === "true") {
                 unlockPanel();
@@ -141,11 +137,9 @@
         }
 
         function logout() { 
-            // লগআউট করলে আবার লক হয়ে যাবে
             localStorage.removeItem("admin_unlocked"); 
             window.location.reload(); 
         }
-        // ------------------------------------
 
         function switchTab(tabName) {
             ['overview', 'deposits', 'withdraws'].forEach(t => {
@@ -173,33 +167,81 @@
                     if(d.status === 'Pending') {
                         pendingCount++;
                         depList.innerHTML += `
-                            <div class="soft-card bg-white p-4">
-                                <div class="flex justify-between font-bold text-sm"><span>${d.method}</span><span class="text-sky-600">৳${d.amount}</span></div>
-                                <p class="text-xs text-gray-500 mt-1">Number: ${d.sender} | TrxID: ${d.trxId}</p>
-                                <div class="flex gap-2 mt-3">
-                                    <button onclick="handleDep('${key}', '${d.userId}', ${d.amount}, 'Successful')" class="flex-1 bg-green-500 text-white py-2 rounded-lg text-xs font-bold">Approve</button>
-                                    <button onclick="handleDep('${key}', null, null, 'Rejected')" class="flex-1 bg-red-100 text-red-600 py-2 rounded-lg text-xs font-bold">Reject</button>
+                            <div class="soft-card bg-white p-4 border-l-4 border-sky-400 mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm text-gray-700">${d.method}</span>
+                                    <span class="text-sky-600 font-bold">৳${d.amount}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 space-y-1 mb-3">
+                                    <p><span class="font-medium text-gray-400">Number:</span> ${d.sender}</p>
+                                    <p><span class="font-medium text-gray-400">TrxID:</span> ${d.trxId}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="handleDep('${key}', '${d.userId}', ${d.amount}, 'Successful')" class="flex-1 bg-green-50 text-green-600 border border-green-200 py-2 rounded-lg text-xs font-bold hover:bg-green-500 hover:text-white transition">Approve</button>
+                                    <button onclick="handleDep('${key}', null, null, 'Rejected')" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-2 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition">Reject</button>
                                 </div>
                             </div>`;
                     }
                 });
-                document.getElementById('stat-dep').innerText = "৳ " + (pendingCount * 100);
+                document.getElementById('stat-dep').innerText = pendingCount;
+            });
+
+            // --- Withdraw Logic ---
+            database.ref('withdraws').on('value', snap => {
+                const widList = document.getElementById('withdraw-list');
+                const withdraws = snap.val() || {};
+                let pendingCount = 0;
+                widList.innerHTML = "";
+                
+                Object.keys(withdraws).forEach(key => {
+                    const w = withdraws[key];
+                    if(w.status === 'Pending') {
+                        pendingCount++;
+                        widList.innerHTML += `
+                            <div class="soft-card bg-white p-4 border-l-4 border-orange-400 mb-3">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="font-bold text-sm text-gray-700">${w.method} (${w.type})</span>
+                                    <span class="text-orange-500 font-bold">৳${w.amount}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 space-y-1 mb-3">
+                                    <p><span class="font-medium text-gray-400">Number:</span> ${w.number}</p>
+                                    <p><span class="font-medium text-gray-400">Date:</span> ${w.dateText}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="handleWid('${key}', '${w.userId}', ${w.amount}, 'Successful')" class="flex-1 bg-green-50 text-green-600 border border-green-200 py-2 rounded-lg text-xs font-bold hover:bg-green-500 hover:text-white transition">Approve</button>
+                                    <button onclick="handleWid('${key}', '${w.userId}', ${w.amount}, 'Rejected')" class="flex-1 bg-red-50 text-red-600 border border-red-200 py-2 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition">Reject</button>
+                                </div>
+                            </div>`;
+                    }
+                });
+                document.getElementById('stat-wid').innerText = pendingCount;
             });
         }
 
         function handleDep(key, uid, amt, status) {
-            if(!confirm("আপনি কি নিশ্চিত?")) return;
-            
+            if(!confirm("Are you sure?")) return;
             database.ref('deposits/' + key).update({ status: status });
-            
             if(status === 'Successful' && uid) {
                 database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
             }
-            alert("ডিপোজিট সফলভাবে অ্যাপ্রুভ হয়েছে!");
+            alert("Deposit Operation Successful!");
+        }
+
+        function handleWid(key, uid, amt, status) {
+            if(!confirm("Are you sure?")) return;
+            
+            database.ref('withdraws/' + key).update({ status: status });
+            
+            // যদি উইথড্র রিজেক্ট করা হয়, তাহলে ইউজারের ব্যালেন্সে টাকা ফেরত দিতে হবে
+            if(status === 'Rejected' && uid) {
+                 database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
+                 alert("উইথড্র বাতিল করা হয়েছে এবং ইউজারের ব্যালেন্সে টাকা ফেরত দেওয়া হয়েছে।");
+            } else {
+                 alert("উইথড্র সফলভাবে অ্যাপ্রুভ করা হয়েছে!");
+            }
         }
 
         loadData();
     </script>
 </body>
 </html>
-
