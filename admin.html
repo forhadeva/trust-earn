@@ -135,27 +135,15 @@
             });
         }
 
-        // --- মূল আপডেট: ডিপোজিট এপ্রুভ করলে আইডি একটিভ হবে + রেফার কমিশন যাবে ---
         function handleDep(key, uid, amt, status) {
             if(!confirm("Are you sure?")) return;
             
-            // ১. ডিপোজিট রিকোয়েস্ট সফল করা
+            // ১. ডিপোজিট স্ট্যাটাস আপডেট হবে
             database.ref('deposits/' + key).update({ status: status });
             
+            // ২. Successful হলে শুধু ব্যালেন্স যোগ হবে (ID Active হবে না)
             if(status === 'Successful' && uid) {
-                // ২. ইউজারের মেইন ব্যালেন্সে টাকা যোগ করা এবং আইডি Active করা
-                database.ref('users/' + uid).update({ status: 'Active' });
                 database.ref('users/' + uid + '/balance').transaction(b => (b || 0) + amt);
-
-                // ৩. রেফার কমিশন লজিক
-                database.ref('users/' + uid).once('value', (snap) => {
-                    const newUser = snap.val();
-                    // চেক করা হচ্ছে ইউজারের কোনো রেফারার (referredBy) আছে কি না
-                    if (newUser && newUser.referredBy && newUser.referredBy !== "none") {
-                        // রেফারারের মেইন ব্যালেন্সে ৫০ টাকা কমিশন পাঠিয়ে দেওয়া
-                        database.ref('users/' + newUser.referredBy + '/balance').transaction(rb => (rb || 0) + 50);
-                    }
-                });
             }
             alert("অপারেশন সফল হয়েছে!");
         }
