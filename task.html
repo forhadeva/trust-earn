@@ -4,84 +4,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task - Earning Platform</title>
+    <title>Task & Spin - Trust Earn</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
+        .soft-card { background: rgba(255, 255, 255, 0.9); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px; }
+        
+        /* Spin Wheel CSS */
+        .wheel-container { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+        .wheel {
+            width: 100%; height: 100%; border-radius: 50%;
+            border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            background: conic-gradient(
+                #f87171 0deg 60deg, #fbbf24 60deg 120deg, #34d399 120deg 180deg, 
+                #38bdf8 180deg 240deg, #a78bfa 240deg 300deg, #fb7185 300deg 360deg
+            );
+            transition: transform 4s cubic-bezier(0.1, 2.7, 0.58, 1); /* Bouncing stop effect */
+        }
+        .pointer {
+            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #334155; z-index: 10;
+        }
+        .wheel-center {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5;
+        }
+        
+        /* Custom Modal */
+        #task-modal { backdrop-filter: blur(5px); transition: all 0.3s ease; }
+    </style>
 </head>
 
-<body class="bg-slate-50 text-gray-800 font-sans pb-20 md:pb-0">
+<body class="text-gray-700 pb-24 md:pb-10">
 
-    <nav class="bg-sky-500 text-white shadow-md">
-        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="text-xl font-bold tracking-wider">Trust Earn</div>
-            <div class="hidden md:flex space-x-8">
-                <a href="index.html" class="hover:text-sky-200 font-medium transition">Home</a>
-                <a href="task.html" class="text-sky-200 font-bold border-b-2 border-sky-200 pb-1">Task</a>
-                <a href="refer.html" class="hover:text-sky-200 font-medium transition">Refer</a>
-                <a href="profile.html" class="hover:text-sky-200 font-medium transition">Profile</a>
+    <nav class="bg-sky-500 text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <i class="ph-bold ph-game-controller text-2xl"></i>
+                <h2 class="text-lg font-bold tracking-wide">Tasks & Games</h2>
             </div>
+            <div class="bg-white/20 px-3 py-1 rounded-full font-bold text-sm" id="user-balance">৳ 0.00</div>
         </div>
     </nav>
 
-    <main class="max-w-md md:max-w-4xl mx-auto px-4 py-12 mt-4 flex flex-col items-center justify-center">
+    <main class="max-w-md md:max-w-4xl mx-auto px-4 mt-6">
 
-        <div
-            class="bg-white w-full p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center text-center mt-10">
-            <div class="bg-sky-50 p-6 rounded-full text-sky-400 mb-6">
-                <svg class="w-16 h-16 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+        <div class="soft-card bg-white p-6 text-center mb-8">
+            <h3 class="font-bold text-gray-800 text-lg mb-1">ভাগ্য চাকা (Spin & Win)</h3>
+            <p id="spin-status-text" class="text-xs text-sky-600 font-medium mb-6">আজকের ফ্রি স্পিনটি লুফে নিন!</p>
+
+            <div class="wheel-container mb-6">
+                <div class="pointer"></div>
+                <div class="wheel" id="wheel"></div>
+                <div class="wheel-center"></div>
             </div>
 
-            <h2 class="text-2xl font-bold text-gray-800 mb-3">Upcoming Tasks!</h2>
-            <p class="text-gray-500 mb-8 px-4">বর্তমান কোন টাস্ক এভেলেবেল নেই ,খুব তাড়াতাড়ি নতুন টাস্ক যোগ করা হবে
-                ,সাথেই থাকুন 🥹</p>
-
-            <a href="index.html"
-                class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition duration-300 w-full md:w-auto">
-                Back To Home
-            </a>
+            <button id="spin-btn" onclick="startSpin()" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95">
+                ফ্রি স্পিন করুন
+            </button>
+            <p id="spin-cost-warning" class="text-[10px] text-gray-400 mt-2 hidden">প্রতি স্পিন: ৫ টাকা (আপনার মূল ব্যালেন্স থেকে কাটা হবে)</p>
         </div>
 
+        <div class="mb-4 flex items-center justify-between">
+            <h3 class="font-bold text-gray-800 text-lg">অতিরিক্ত আয়ের কাজ</h3>
+            <span class="bg-green-100 text-green-600 text-[10px] font-bold px-2 py-1 rounded">নতুন</span>
+        </div>
+
+        <div class="space-y-4">
+            <div class="soft-card bg-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-youtube-logo"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-800">YouTube Subscribe</h4>
+                        <p class="text-[10px] text-gray-500">চ্যানেলটি সাবস্ক্রাইব করুন</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sky-600 text-sm mb-1">+ ৳ ২.০০</p>
+                    <button onclick="openTaskModal('YouTube Subscribe', 2.00, 'https://youtube.com')" class="bg-sky-100 text-sky-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sky-500 hover:text-white transition">কাজ করুন</button>
+                </div>
+            </div>
+
+            <div class="soft-card bg-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-facebook-logo"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-800">Facebook Page Like</h4>
+                        <p class="text-[10px] text-gray-500">পেইজে লাইক ও ফলো করুন</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sky-600 text-sm mb-1">+ ৳ ১.৫০</p>
+                    <button onclick="openTaskModal('Facebook Page Like', 1.50, 'https://facebook.com')" class="bg-sky-100 text-sky-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sky-500 hover:text-white transition">কাজ করুন</button>
+                </div>
+            </div>
+
+            <div class="soft-card bg-white p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl">
+                        <i class="ph-fill ph-download-simple"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-sm text-gray-800">App Install & Review</h4>
+                        <p class="text-[10px] text-gray-500">অ্যাপ নামিয়ে ৫ স্টার রিভিউ দিন</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <p class="font-bold text-sky-600 text-sm mb-1">+ ৳ ৫.০০</p>
+                    <button onclick="openTaskModal('App Install & Review', 5.00, '#')" class="bg-sky-100 text-sky-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sky-500 hover:text-white transition">কাজ করুন</button>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <div
-        class="md:hidden fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-3 text-xs text-gray-500 z-50">
+    <div id="task-modal" class="fixed inset-0 bg-slate-900/80 z-[100] hidden items-center justify-center px-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm transform scale-95 transition-transform">
+            <h3 id="modal-title" class="text-lg font-bold text-gray-800 mb-2">Task Name</h3>
+            <p class="text-xs text-gray-500 mb-4">নিচের লিংকে গিয়ে কাজটি সম্পূর্ণ করুন এবং প্রমাণ দিন।</p>
+            
+            <a id="modal-link" href="#" target="_blank" class="block text-center bg-gray-100 text-gray-700 py-3 rounded-xl mb-4 text-sm font-bold border border-gray-200 hover:bg-sky-50 hover:text-sky-600 transition">
+                <i class="ph-bold ph-link text-lg align-middle"></i> লিংক ওপেন করুন
+            </a>
+
+            <label class="text-xs font-bold text-gray-600 block mb-1">প্রমাণ দিন (Screen Name / Email / Number)</label>
+            <input type="text" id="task-proof" placeholder="আপনার ইউটিউব/ফেসবুক নাম" class="w-full px-4 py-3 border border-gray-200 rounded-xl mb-4 outline-none focus:border-sky-500 bg-gray-50 text-sm">
+
+            <div class="flex gap-3">
+                <button onclick="closeTaskModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">বাতিল</button>
+                <button onclick="submitTask()" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl shadow-md">সাবমিট</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center py-3 text-xs text-gray-500 z-50 md:hidden">
         <a href="index.html" class="flex flex-col items-center hover:text-sky-500 transition">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                </path>
-            </svg>
-            <span class="font-medium">Home</span>
+            <i class="ph ph-house text-2xl"></i><span class="font-medium">Home</span>
         </a>
         <a href="task.html" class="flex flex-col items-center text-sky-500">
-            <svg class="w-6 h-6 mb-1" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                <path fill-rule="evenodd"
-                    d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                    clip-rule="evenodd"></path>
-            </svg>
-            <span class="font-medium">Task</span>
+            <i class="ph-fill ph-clipboard-text text-2xl"></i><span class="font-medium">Task</span>
         </a>
         <a href="refer.html" class="flex flex-col items-center hover:text-sky-500 transition">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-                </path>
-            </svg>
-            <span class="font-medium">Refer</span>
+            <i class="ph ph-users-three text-2xl"></i><span class="font-medium">Refer</span>
         </a>
         <a href="profile.html" class="flex flex-col items-center hover:text-sky-500 transition">
-            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-            </svg>
-            <span class="font-medium">Profile</span>
+            <i class="ph ph-user-circle text-2xl"></i><span class="font-medium">Profile</span>
         </a>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD7naXXNpZLZ4nWWSm1bFUKZQHwu5aLCRQ",
+            authDomain: "trustearn-a33fc.firebaseapp.com",
+            databaseURL: "https://trustearn-a33fc-default-rtdb.firebaseio.com",
+            projectId: "trustearn-a33fc",
+            storageBucket: "trustearn-a33fc.firebasestorage.app",
+            messagingSenderId: "771810262455",
+            appId: "1:771810262455:web:713d706a7c6da52ac77c32"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentUserData = null;
+        let isSpinning = false;
+        let currentRotation = 0;
+        const SPIN_COST = 5;
+        const PRIZES = [0, 1, 2, 5, 10, 20]; // টাকার পরিমাণ
+        
+        // অ্যাডমিন যাতে লস না খায়, তাই ছোট এমাউন্ট পড়ার সুযোগ বেশি দেওয়া হয়েছে
+        const PROBABILITIES = [50, 25, 10, 10, 4, 1]; 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const userId = localStorage.getItem("earn_session_user");
+            if (!userId) { window.location.href = "auth.html"; return; }
+
+            database.ref('users/' + userId).on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    currentUserData = snapshot.val();
+                    document.getElementById('user-balance').innerText = `৳ ${(currentUserData.balance || 0).toFixed(2)}`;
+                    checkSpinStatus();
+                } else {
+                    window.location.href = "auth.html";
+                }
+            });
+        });
+
+        function checkSpinStatus() {
+            const today = new Date().toDateString();
+            const lastSpin = currentUserData.lastFreeSpinDate;
+            const btn = document.getElementById('spin-btn');
+            const statusText = document.getElementById('spin-status-text');
+            const warningText = document.getElementById('spin-cost-warning');
+
+            if (lastSpin !== today) {
+                // Free Spin Available
+                btn.innerText = "ফ্রি স্পিন করুন";
+                btn.className = "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95";
+                statusText.innerText = "আজকের ফ্রি স্পিনটি লুফে নিন!";
+                statusText.className = "text-xs text-green-600 font-bold mb-6";
+                warningText.classList.add('hidden');
+            } else {
+                // Paid Spin
+                btn.innerText = "স্পিন করুন (৳৫)";
+                btn.className = "bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95";
+                statusText.innerText = "ফ্রি স্পিন শেষ। এখন প্রতি স্পিনে ৫ টাকা চার্জ প্রযোজ্য।";
+                statusText.className = "text-xs text-purple-600 font-bold mb-6";
+                warningText.classList.remove('hidden');
+            }
+        }
+
+        function getWeightedRandomPrize() {
+            let sum = 0;
+            let r = Math.random() * 100;
+            for (let i = 0; i < PRIZES.length; i++) {
+                sum += PROBABILITIES[i];
+                if (r <= sum) return { prize: PRIZES[i], index: i };
+            }
+            return { prize: 0, index: 0 };
+        }
+
+        function startSpin() {
+            if (isSpinning) return;
+            if (currentUserData.status !== 'Active') {
+                alert("স্পিন করতে হলে আগে আপনার অ্যাকাউন্টটি অ্যাক্টিভ করতে হবে!");
+                return;
+            }
+
+            const today = new Date().toDateString();
+            const isFree = (currentUserData.lastFreeSpinDate !== today);
+            const userId = localStorage.getItem("earn_session_user");
+
+            if (!isFree) {
+                if ((currentUserData.balance || 0) < SPIN_COST) {
+                    alert("আপনার ব্যালেন্স ৫ টাকার কম। স্পিন করতে পারবেন না।");
+                    return;
+                }
+                // ব্যালেন্স থেকে ৫ টাকা কাটা
+                database.ref('users/' + userId + '/balance').transaction(b => (b || 0) - SPIN_COST);
+            } else {
+                // ফ্রি স্পিন ব্যবহার করা হলো
+                database.ref('users/' + userId).update({ lastFreeSpinDate: today });
+            }
+
+            isSpinning = true;
+            const result = getWeightedRandomPrize();
+            
+            // চাকা ঘোরানোর লজিক
+            const wheel = document.getElementById('wheel');
+            const segmentAngle = 360 / PRIZES.length;
+            // রেজাল্ট ইনডেক্স অনুযায়ী কত ডিগ্রি ঘুরবে সেটা নির্ধারণ (সাথে এক্সট্রা ৫-৬ পাক ঘুরবে)
+            const targetRotation = currentRotation + 1800 + (360 - (result.index * segmentAngle)) - (currentRotation % 360);
+            
+            wheel.style.transform = `rotate(${targetRotation}deg)`;
+            currentRotation = targetRotation;
+
+            setTimeout(() => {
+                isSpinning = false;
+                if(result.prize > 0) {
+                    // পুরস্কার ব্যালেন্সে যোগ করা
+                    database.ref('users/' + userId + '/balance').transaction(b => (b || 0) + result.prize);
+                    alert(`🎉 অভিনন্দন! আপনি ৳${result.prize} জিতেছেন!`);
+                } else {
+                    alert(`😔 ওহ নো! আপনি এবার কিছু পাননি। আবার চেষ্টা করুন!`);
+                }
+            }, 4100);
+        }
+
+        // --- Task Modal Logic ---
+        let currentTaskInfo = null;
+        
+        function openTaskModal(name, reward, link) {
+            if (currentUserData.status !== 'Active') {
+                alert("কাজ করতে হলে আগে অ্যাকাউন্ট অ্যাক্টিভ করতে হবে!");
+                return;
+            }
+            currentTaskInfo = { name, reward };
+            document.getElementById('modal-title').innerText = name;
+            document.getElementById('modal-link').href = link;
+            document.getElementById('task-proof').value = "";
+            const modal = document.getElementById('task-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.firstElementChild.classList.replace('scale-95', 'scale-100'), 10);
+        }
+
+        function closeTaskModal() {
+            const modal = document.getElementById('task-modal');
+            modal.firstElementChild.classList.replace('scale-100', 'scale-95');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+
+        function submitTask() {
+            const proof = document.getElementById('task-proof').value.trim();
+            if(!proof) { alert("দয়া করে কাজের প্রমাণ দিন!"); return; }
+            
+            const userId = localStorage.getItem("earn_session_user");
+            
+            // ডাটাবেসে Pending Task হিসেবে জমা হবে
+            const taskData = {
+                userId: userId,
+                userName: currentUserData.name,
+                taskName: currentTaskInfo.name,
+                reward: currentTaskInfo.reward,
+                proof: proof,
+                status: 'Pending',
+                date: new Date().toLocaleString()
+            };
+
+            database.ref('task_submissions').push(taskData).then(() => {
+                alert("আপনার কাজটি সফলভাবে জমা হয়েছে! অ্যাডমিন চেক করে ব্যালেন্স অ্যাড করে দেবেন।");
+                closeTaskModal();
+            });
+        }
+    </script>
 </body>
-
-
 </html>
