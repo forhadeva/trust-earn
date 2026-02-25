@@ -7,32 +7,61 @@
     <title>Task & Spin - Trust Earn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background-color: #f8fafc; }
         .soft-card { background: rgba(255, 255, 255, 0.9); box-shadow: 0 10px 30px -5px rgba(14, 165, 233, 0.15); border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 20px; }
         
-        /* Spin Wheel CSS */
-        .wheel-container { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+        /* Premium Spin Wheel CSS */
+        .wheel-container { position: relative; width: 260px; height: 260px; margin: 0 auto; }
         .wheel {
             width: 100%; height: 100%; border-radius: 50%;
-            border: 4px solid #ffffff; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 8px solid #1e293b; /* Dark outer border */
+            box-shadow: 0 0 0 3px #0ea5e9, 0 10px 25px rgba(0,0,0,0.4); /* Glowing effect */
             background: conic-gradient(
-                #f87171 0deg 60deg, #fbbf24 60deg 120deg, #34d399 120deg 180deg, 
-                #38bdf8 180deg 240deg, #a78bfa 240deg 300deg, #fb7185 300deg 360deg
+                #ef4444 0deg 60deg,    /* ৳0 - Red */
+                #f59e0b 60deg 120deg,  /* ৳1 - Yellow */
+                #10b981 120deg 180deg, /* ৳2 - Green */
+                #3b82f6 180deg 240deg, /* ৳5 - Blue */
+                #8b5cf6 240deg 300deg, /* ৳10 - Purple */
+                #ec4899 300deg 360deg  /* ৳20 - Pink */
             );
-            transition: transform 4s cubic-bezier(0.1, 2.7, 0.58, 1); /* Bouncing stop effect */
+            transition: transform 4s cubic-bezier(0.1, 2.7, 0.58, 1);
+            position: relative;
+            overflow: hidden;
         }
+        
+        /* Wheel Text Logic */
+        .wheel-text {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            transform: rotate(calc(var(--i) * 60deg + 30deg));
+        }
+        .wheel-text span {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            color: white; font-weight: 800; font-size: 18px;
+            text-shadow: 1px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        /* Wheel Pointer & Center */
         .pointer {
-            position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #334155; z-index: 10;
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 0; 
+            border-left: 18px solid transparent; border-right: 18px solid transparent; border-top: 35px solid #0ea5e9; 
+            z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+        }
+        .pointer::after {
+            content: ''; position: absolute; top: -35px; left: -10px;
+            border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 25px solid #0284c7;
         }
         .wheel-center {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 40px; height: 40px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 5;
+            width: 45px; height: 45px; background: #0f172a; border-radius: 50%; 
+            border: 4px solid #fff; z-index: 5;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 0 15px rgba(0,0,0,0.3);
+            display: flex; align-items: center; justify-content: center;
         }
         
-        /* Custom Modal */
+        /* Modal Background */
         #task-modal { backdrop-filter: blur(5px); transition: all 0.3s ease; }
     </style>
 </head>
@@ -51,20 +80,31 @@
 
     <main class="max-w-md md:max-w-4xl mx-auto px-4 mt-6">
 
-        <div class="soft-card bg-white p-6 text-center mb-8">
-            <h3 class="font-bold text-gray-800 text-lg mb-1">ভাগ্য চাকা (Spin & Win)</h3>
-            <p id="spin-status-text" class="text-xs text-sky-600 font-medium mb-6">আজকের ফ্রি স্পিনটি লুফে নিন!</p>
+        <div class="bg-slate-800 rounded-[25px] p-6 text-center mb-8 relative overflow-hidden border border-slate-700 shadow-xl">
+            <div class="absolute inset-0 bg-gradient-to-b from-sky-500/10 to-transparent pointer-events-none"></div>
+            
+            <h3 class="font-bold text-white text-xl mb-1 relative z-10">ভাগ্য চাকা (Spin & Win)</h3>
+            <p id="spin-status-text" class="text-xs text-green-400 font-bold mb-8 relative z-10">আজকের ফ্রি স্পিনটি লুফে নিন!</p>
 
-            <div class="wheel-container mb-6">
+            <div class="wheel-container mb-8 relative z-10">
                 <div class="pointer"></div>
-                <div class="wheel" id="wheel"></div>
-                <div class="wheel-center"></div>
+                <div class="wheel" id="wheel">
+                    <div class="wheel-text" style="--i:0;"><span>৳০</span></div>
+                    <div class="wheel-text" style="--i:1;"><span>৳১</span></div>
+                    <div class="wheel-text" style="--i:2;"><span>৳২</span></div>
+                    <div class="wheel-text" style="--i:3;"><span>৳৫</span></div>
+                    <div class="wheel-text" style="--i:4;"><span>৳১০</span></div>
+                    <div class="wheel-text" style="--i:5;"><span>৳২০</span></div>
+                </div>
+                <div class="wheel-center">
+                    <i class="ph-fill ph-star text-yellow-400 text-lg"></i>
+                </div>
             </div>
 
-            <button id="spin-btn" onclick="startSpin()" class="bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95">
+            <button id="spin-btn" onclick="startSpin()" class="relative z-10 w-full max-w-[250px] mx-auto bg-gradient-to-r from-sky-400 to-blue-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_10px_20px_-10px_rgba(14,165,233,0.5)] hover:scale-105 transition transform active:scale-95 text-lg">
                 ফ্রি স্পিন করুন
             </button>
-            <p id="spin-cost-warning" class="text-[10px] text-gray-400 mt-2 hidden">প্রতি স্পিন: ৫ টাকা (আপনার মূল ব্যালেন্স থেকে কাটা হবে)</p>
+            <p id="spin-cost-warning" class="text-[11px] text-slate-400 mt-3 relative z-10 hidden">প্রতি স্পিন: ৫ টাকা (আপনার মূল ব্যালেন্স থেকে কাটা হবে)</p>
         </div>
 
         <div class="mb-4 flex items-center justify-between">
@@ -104,8 +144,8 @@
                     <button onclick="openTaskModal('Facebook Page Like', 1.50, 'https://facebook.com')" class="bg-sky-100 text-sky-600 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-sky-500 hover:text-white transition">কাজ করুন</button>
                 </div>
             </div>
-
-            <div class="soft-card bg-white p-4 flex justify-between items-center">
+            
+             <div class="soft-card bg-white p-4 flex justify-between items-center">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full bg-green-50 text-green-500 flex items-center justify-center text-2xl">
                         <i class="ph-fill ph-download-simple"></i>
@@ -136,8 +176,8 @@
             <input type="text" id="task-proof" placeholder="আপনার ইউটিউব/ফেসবুক নাম" class="w-full px-4 py-3 border border-gray-200 rounded-xl mb-4 outline-none focus:border-sky-500 bg-gray-50 text-sm">
 
             <div class="flex gap-3">
-                <button onclick="closeTaskModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl">বাতিল</button>
-                <button onclick="submitTask()" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl shadow-md">সাবমিট</button>
+                <button onclick="closeTaskModal()" class="flex-1 bg-gray-100 text-gray-600 font-bold py-3 rounded-xl hover:bg-gray-200 transition">বাতিল</button>
+                <button onclick="submitTask()" class="flex-1 bg-sky-500 text-white font-bold py-3 rounded-xl shadow-md hover:bg-sky-600 transition">সাবমিট</button>
             </div>
         </div>
     </div>
@@ -177,9 +217,9 @@
         let isSpinning = false;
         let currentRotation = 0;
         const SPIN_COST = 5;
-        const PRIZES = [0, 1, 2, 5, 10, 20]; // টাকার পরিমাণ
         
-        // অ্যাডমিন যাতে লস না খায়, তাই ছোট এমাউন্ট পড়ার সুযোগ বেশি দেওয়া হয়েছে
+        // প্রাইজের সিরিয়াল: লাল (০), হলুদ (১), সবুজ (২), নীল (৫), বেগুনি (১০), গোলাপি (২০)
+        const PRIZES = [0, 1, 2, 5, 10, 20]; 
         const PROBABILITIES = [50, 25, 10, 10, 4, 1]; 
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -205,18 +245,16 @@
             const warningText = document.getElementById('spin-cost-warning');
 
             if (lastSpin !== today) {
-                // Free Spin Available
                 btn.innerText = "ফ্রি স্পিন করুন";
-                btn.className = "bg-gradient-to-r from-sky-500 to-blue-600 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95";
+                btn.className = "relative z-10 w-full max-w-[250px] mx-auto bg-gradient-to-r from-sky-400 to-blue-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_10px_20px_-10px_rgba(14,165,233,0.5)] hover:scale-105 transition transform active:scale-95 text-lg";
                 statusText.innerText = "আজকের ফ্রি স্পিনটি লুফে নিন!";
-                statusText.className = "text-xs text-green-600 font-bold mb-6";
+                statusText.className = "text-xs text-green-400 font-bold mb-8 relative z-10";
                 warningText.classList.add('hidden');
             } else {
-                // Paid Spin
                 btn.innerText = "স্পিন করুন (৳৫)";
-                btn.className = "bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3 px-10 rounded-full shadow-lg hover:scale-105 transition transform active:scale-95";
+                btn.className = "relative z-10 w-full max-w-[250px] mx-auto bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3.5 px-6 rounded-2xl shadow-[0_10px_20px_-10px_rgba(168,85,247,0.5)] hover:scale-105 transition transform active:scale-95 text-lg";
                 statusText.innerText = "ফ্রি স্পিন শেষ। এখন প্রতি স্পিনে ৫ টাকা চার্জ প্রযোজ্য।";
-                statusText.className = "text-xs text-purple-600 font-bold mb-6";
+                statusText.className = "text-xs text-purple-400 font-bold mb-8 relative z-10";
                 warningText.classList.remove('hidden');
             }
         }
@@ -247,21 +285,17 @@
                     alert("আপনার ব্যালেন্স ৫ টাকার কম। স্পিন করতে পারবেন না।");
                     return;
                 }
-                // ব্যালেন্স থেকে ৫ টাকা কাটা
                 database.ref('users/' + userId + '/balance').transaction(b => (b || 0) - SPIN_COST);
             } else {
-                // ফ্রি স্পিন ব্যবহার করা হলো
                 database.ref('users/' + userId).update({ lastFreeSpinDate: today });
             }
 
             isSpinning = true;
             const result = getWeightedRandomPrize();
             
-            // চাকা ঘোরানোর লজিক
             const wheel = document.getElementById('wheel');
-            const segmentAngle = 360 / PRIZES.length;
-            // রেজাল্ট ইনডেক্স অনুযায়ী কত ডিগ্রি ঘুরবে সেটা নির্ধারণ (সাথে এক্সট্রা ৫-৬ পাক ঘুরবে)
-            const targetRotation = currentRotation + 1800 + (360 - (result.index * segmentAngle)) - (currentRotation % 360);
+            // এই ফর্মুলাটা চাকাটিকে একদম পারফেক্টভাবে ওই নির্দিষ্ট অ্যামাউন্টের ঘরে এসে থামাবে
+            const targetRotation = currentRotation + 1800 + (360 - (result.index * 60 + 30)) - (currentRotation % 360);
             
             wheel.style.transform = `rotate(${targetRotation}deg)`;
             currentRotation = targetRotation;
@@ -269,7 +303,6 @@
             setTimeout(() => {
                 isSpinning = false;
                 if(result.prize > 0) {
-                    // পুরস্কার ব্যালেন্সে যোগ করা
                     database.ref('users/' + userId + '/balance').transaction(b => (b || 0) + result.prize);
                     alert(`🎉 অভিনন্দন! আপনি ৳${result.prize} জিতেছেন!`);
                 } else {
@@ -278,7 +311,6 @@
             }, 4100);
         }
 
-        // --- Task Modal Logic ---
         let currentTaskInfo = null;
         
         function openTaskModal(name, reward, link) {
@@ -307,7 +339,6 @@
             
             const userId = localStorage.getItem("earn_session_user");
             
-            // ডাটাবেসে Pending Task হিসেবে জমা হবে
             const taskData = {
                 userId: userId,
                 userName: currentUserData.name,
